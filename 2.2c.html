@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Delivery</title>
+    <style>
+        /* Add your CSS styles here */
+        /* You can use CSS frameworks like Bootstrap for styling */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .restaurant-item {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px;
+            display: inline-block;
+            width: calc(33.33% - 20px);
+            vertical-align: top;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .restaurant-item img {
+            max-width: 100%;
+            height: auto;
+        }
+        .rating {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="header">
+                <h1>Welcome to Food Delivery</h1>
+            </div>
+            <div class="restaurant-list">
+                <div v-for="restaurant in restaurants" :key="restaurant.id" class="restaurant-item">
+                    <img :src="restaurant.image" alt="Restaurant Image">
+                    <h2>{{ restaurant.name }}</h2>
+                    <div class="rating">
+                        <span v-for="star in calculateAverageRating(restaurant.rating)" class="star">&#9733;</span>
+                    </div>
+                    <p>{{ restaurant.description }}</p>
+                </div>
+            </div>
+            <div class="add-restaurant">
+                <h2>Add a New Restaurant</h2>
+                <form @submit.prevent="addRestaurant">
+                    <label for="restaurantName">Restaurant Name:</label>
+                    <input type="text" id="restaurantName" v-model="newRestaurant.name" required>
+                    <label for="restaurantDescription">Restaurant Description:</label>
+                    <textarea id="restaurantDescription" v-model="newRestaurant.description" required></textarea>
+                    <label for="restaurantImage">Restaurant Image URL:</label>
+                    <input type="url" id="restaurantImage" v-model="newRestaurant.image" required>
+                    <label for="restaurantRating">Restaurant Rating:</label>
+                    <input type="number" id="restaurantRating" v-model="newRestaurant.rating" min="0" max="5" step="0.1" required>
+                    <button type="submit">Add Restaurant</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.0.11/dist/vue.global.min.js"></script>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    restaurants: [
+                        { id: 1, name: "Restaurant 1", description: "Description 1", image: "restaurant1.jpg", rating: [4, 5, 3] },
+                        { id: 2, name: "Restaurant 2", description: "Description 2", image: "restaurant2.jpg", rating: [3, 2, 4] },
+                        // Add more restaurants here
+                    ],
+                    newRestaurant: {
+                        name: "",
+                        description: "",
+                        image: "",
+                        rating: 0, // Initialize the rating field
+                    },
+                };
+            },
+            methods: {
+                calculateAverageRating(ratingArray) {
+                    if (ratingArray.length === 0) return 0;
+                    const sum = ratingArray.reduce((total, rating) => total + rating, 0);
+                    return (sum / ratingArray.length).toFixed(2);
+                },
+                addRestaurant() {
+                    // Add a new restaurant to the list
+                    this.restaurants.push({
+                        id: this.restaurants.length + 1,
+                        name: this.newRestaurant.name,
+                        description: this.newRestaurant.description,
+                        image: this.newRestaurant.image,
+                        rating: [parseFloat(this.newRestaurant.rating)], // Convert rating to a float and add it as an array
+                    });
+
+                    // Clear the form fields
+                    this.newRestaurant.name = "";
+                    this.newRestaurant.description = "";
+                    this.newRestaurant.image = "";
+                    this.newRestaurant.rating = 0; // Reset the rating field
+                },
+            },
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
